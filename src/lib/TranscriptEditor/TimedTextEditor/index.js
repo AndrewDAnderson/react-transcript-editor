@@ -12,6 +12,7 @@ import {
 } from 'draft-js';
 
 import Word from './Word';
+import Hashtag from './Hashtag';
 import sttJsonAdapter from './adapters/index.js';
 import styles from './index.module.css';
 
@@ -35,7 +36,7 @@ class TimedTextEditor extends React.Component {
     if (nextProps.transcriptData !== null) {
       return {
         transcriptData: nextProps.transcriptData,
-        isEditable: nextProps.isEditable,
+        isEditable: nextProps.isEditable
       }
     }
     return null;
@@ -48,10 +49,15 @@ class TimedTextEditor extends React.Component {
   }
 
   onChange = (editorState) => {
+    const currentBlockKey = editorState.getSelection().getStartKey();
+    const lastChangeType = editorState.getLastChangeType();
+    // console.log('currentBlockKey: ',currentBlockKey);
+    // console.log('lastChangeType: ',lastChangeType);
     if (this.state.isEditable) {
       this.setState((prevState, props) => ({
         editorState,
         inputCount: prevState.inputCount + 1,
+        currentBlockKey
       }), () => {
         // Saving every 5 keystrokes
         if (this.state.inputCount > 5) {
@@ -123,14 +129,14 @@ class TimedTextEditor extends React.Component {
   // contains blocks and entityMap
 
   /**
-   * @param {object} data - draftJs content 
+   * @param {object} data - draftJs content
    * @param {object} data.entityMap - draftJs entity maps - used by convertFromRaw
    * @param {object} data.blocks - draftJs blocks - used by convertFromRaw
    */
   setEditorContentState = (data) => {
     const contentState = convertFromRaw(data);
     // eslint-disable-next-line no-use-before-define
-    const editorState = EditorState.createWithContent(contentState, decorator);
+    const editorState = EditorState.createWithContent(contentState, this.getDecorator());
     this.setState({ editorState });
   }
 
@@ -140,6 +146,57 @@ class TimedTextEditor extends React.Component {
     const data = convertToRaw(this.state.editorState.getCurrentContent());
 
     return data;
+  }
+
+  // decorator definition - Draftjs
+  // defines what to use to render the entity
+  getDecorator = () => {
+    return new CompositeDecorator([
+      {
+        strategy: this.getEntityStrategy('MUTABLE'),
+        component: Word
+      },
+      {
+        strategy: this.hashtagStrategy,
+        component: Hashtag
+      }
+    ]);
+  }
+
+  // DraftJs decorator to recognize which entity is which
+  // and know what to apply to what component
+  getEntityStrategy = (mutability) => (contentBlock, callback, contentState) => {
+    contentBlock.findEntityRanges((character) => {
+      const entityKey = character.getEntity();
+      if (entityKey === null) {
+        return false;
+      }
+      return contentState.getEntity(entityKey).getMutability() === mutability;
+    }, callback);
+  };
+
+  hashtagStrategy = (contentBlock, callback, contentState) => {
+    // https://draftjs.org/docs/api-reference-content-block.html#getdata
+    // https://draftjs.org/docs/advanced-topics-decorators.html#compositedecorator
+
+    const text = contentBlock.getText();
+    // TODO: now it hadles only first word in paragraph, could change to
+    // do for every word within paragraph
+    const data = contentState.getEntity(contentBlock.getEntityAt(0)).getData();
+
+    // TODO: Loop through all words, and add words beofre (or after timecode) to
+    // range to return in callback
+    // TODO: calculate start and end of range
+    if(data.start < this.props.currentTime){
+      console.log('data.start < this.props.currentTime', data.start , this.props.currentTime)
+    }
+
+    // let matchArr, start;
+    // const HASHTAG_REGEX = /\#[\w\u0590-\u05ff]+/g;
+    // while ((matchArr = HASHTAG_REGEX.exec(text)) !== null) {
+    //   start = matchArr.index;
+    //   callback(start, start + matchArr[0].length);
+    // }
   }
 
   render() {
@@ -161,27 +218,6 @@ class TimedTextEditor extends React.Component {
     );
   }
 }
-
-// DraftJs decorator to recognize which entity is which
-// and know what to apply to what component
-const getEntityStrategy = mutability => (contentBlock, callback, contentState) => {
-  contentBlock.findEntityRanges((character) => {
-    const entityKey = character.getEntity();
-    if (entityKey === null) {
-      return false;
-    }
-    return contentState.getEntity(entityKey).getMutability() === mutability;
-  }, callback);
-};
-
-// decorator definition - Draftjs
-// defines what to use to render the entity
-const decorator = new CompositeDecorator([
-  {
-    strategy: getEntityStrategy('MUTABLE'),
-    component: Word,
-  },
-]);
 
 TimedTextEditor.propTypes = {
   transcriptData: PropTypes.object,

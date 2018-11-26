@@ -16,6 +16,7 @@ import { secondsToTimecode, timecodeToSeconds } from '../../Util/timecode-conver
 class MediaPlayer extends React.Component {
   constructor(props) {
     super(props);
+
     this.videoRef = React.createRef();
 
     this.state = {
@@ -45,6 +46,8 @@ class MediaPlayer extends React.Component {
           videoRef.play();
         }
       }
+
+      this.props.hookOnTimeUpdate(newCurrentTime);
     }
   }
 
@@ -191,15 +194,15 @@ class MediaPlayer extends React.Component {
 
   getMediaCurrentTime = () => {
    if(this.videoRef.current !== null) {
-    return secondsToTimecode(this.videoRef.current.currentTime + this.state.timecodeOffset) 
-   } 
+    return secondsToTimecode(this.videoRef.current.currentTime + this.state.timecodeOffset)
+   }
      return '00:00:00:00';
   }
 
   getMediaDuration = () => {
     if(this.videoRef.current !== null){
       return secondsToTimecode(this.videoRef.current.duration + this.state.timecodeOffset);
-    } 
+    }
       return  '00:00:00:00';
   }
 
@@ -231,7 +234,7 @@ class MediaPlayer extends React.Component {
         <ProgressBar
           max={ this.videoRef.current !== null ? parseInt(this.videoRef.current.duration) : 100 }
           value={ this.videoRef.current !== null ? parseInt(this.videoRef.current.currentTime) : 0 }
-          buttonClick={ this.handleProgressBarClick.bind(this) } 
+          buttonClick={ this.handleProgressBarClick.bind(this) }
         />
         <br/>
 
@@ -248,32 +251,32 @@ class MediaPlayer extends React.Component {
           setTimeCodeOffset={ this.setTimeCodeOffset.bind(this) }
           timecodeOffset={ secondsToTimecode(this.state.timecodeOffset) }
         />
-     
-        <VolumeControl 
+
+        <VolumeControl
           handleMuteVolume={ this.handleMuteVolume.bind(this) }
         />
-   
+
         <PlaybackRate
           playBackRate={ this.state.playBackRate }
           handlePlayBackRateChange={ this.handlePlayBackRateChange.bind(this) }
           setPlayBackRate={ this.setPlayBackRate.bind(this) }
         />
-   
+
         <RollBack
           rollBackValueInSeconds={ this.state.rollBackValueInSeconds }
           handleChangeReplayRollbackValue={ this.handleChangeReplayRollbackValue.bind(this) }
           rollBack={ this.rollBack.bind(this) }
-        />  
-   
+        />
+
       </section>
     };
 
     // list of keyboard shortcuts helper text
     const keyboardShortcutsElements = Object.keys(this.state.hotKeys).map((shortcutKey, index) => {
-        return <p 
-        className={ styles.helpText } 
+        return <p
+        className={ styles.helpText }
         key={ shortcutKey }>
-          <code>{shortcutKey}</code> 
+          <code>{shortcutKey}</code>
           <small>
             <b> {this.state.hotKeys[shortcutKey].helperText}</b>
           </small>
@@ -285,17 +288,14 @@ class MediaPlayer extends React.Component {
       keyboardShortcuts = <section className={ styles.hideInMobile }><label>{keyboardShortcutsElements}</label>
         <br/>
         <small className={ styles.helpText }>Double click on a word to be taken to that time in the media.</small>
-      </section> 
+      </section>
     }
 
     return (
       <section className={ styles.videoSection }>
-
         { mediaPlayerEl }
-
         { playerControlsSection }
-      
-        { keyboardShortcuts }  
+        { keyboardShortcuts }
       </section>
     );
   }

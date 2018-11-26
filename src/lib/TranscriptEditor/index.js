@@ -46,8 +46,8 @@ class TranscriptEditor extends React.Component {
   // eslint-disable-next-line class-methods-use-this
   handleTimeUpdate = (currentTime) => {
     this.setState({
-      currentTime,
-    })
+      currentTime
+    });
   }
 
   getEditorContent = sttType => this.refs.timedTextEditor.getEditorContent(sttType)
