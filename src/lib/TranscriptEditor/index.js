@@ -12,6 +12,7 @@ class TranscriptEditor extends React.Component {
 
     this.state = {
       currentTime: 0,
+      isPlaying: false,
       lastLocalSavedTime: '',
       transcriptData: null,
     }
@@ -50,14 +51,21 @@ class TranscriptEditor extends React.Component {
     })
   }
 
-  handlePlayMedia = (bool) => {
-    this.playMedia(bool)
+  // handlePlayMedia = (bool) => {
+  //   this.playMedia(bool);
+  // }
+  //
+  // handleIsPlaying = () => {
+  //   return this.isPlaying();
+  // }
+
+  changePlayingState = (isPlaying) => {
+    this.setState({
+      isPlaying
+    });
   }
 
-  handleIsPlaying = () => {
-    return this.isPlaying()
-  }
-  getEditorContent = sttType => this.refs.timedTextEditor.getEditorContent(sttType)
+  getEditorContent = sttType => this.refs.timedTextEditor.getEditorContent(sttType);
 
   render() {
     return (
@@ -67,7 +75,9 @@ class TranscriptEditor extends React.Component {
               // eslint-disable-next-line no-return-assign
               hookSeek={ foo => this.setCurrentTime = foo }
               hookPlayMedia={ foo => this.playMedia = foo }
-              hookIsPlaying={ foo => this.isPlaying = foo }
+              // hookIsPlaying={ foo => this.changePlayingState = foo }
+              changePlayingState={ this.changePlayingState }
+              isPlaying={ this.state.isPlaying }
               hookOnTimeUpdate={ this.handleTimeUpdate }
               mediaUrl={ this.props.mediaUrl }
               />
@@ -77,7 +87,8 @@ class TranscriptEditor extends React.Component {
               transcriptData={ this.state.transcriptData }
               onWordClick={ this.handleWordClick }
               playMedia={ this.handlePlayMedia }
-              isPlaying={ this.handleIsPlaying }
+              changePlayingState={ this.changePlayingState }
+              isPlaying={ this.state.isPlaying }
               currentTime={ this.state.currentTime }
               isEditable={ this.props.isEditable }
               sttJsonType={ this.props.sttJsonType }

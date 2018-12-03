@@ -3,19 +3,19 @@ import PropTypes from 'prop-types';
 
 class PlayerControls extends React.Component {
     // to handle backward and forward mouse pressed on btn
-    // set a 300 ms  interval to repeat the 
+    // set a 300 ms  interval to repeat the
     // backward or forward function
     // on mouseUp the interval is cleared
     setIntervalHelperBackward =() => {
        this.interval =  setInterval(() => {
                 this.props.skipBackward();
-        }, 300);       
+        }, 300);
     }
 
     setIntervalHelperForward =() => {
         this.interval =  setInterval(() => {
                  this.props.skipForward();
-         }, 300);       
+         }, 300);
      }
 
     clearIntervalHelper = () => {
@@ -27,34 +27,37 @@ class PlayerControls extends React.Component {
     }
 
     render() {
+        const playingState = this.props.isPlaying;
+        const playIcon = playingState ? '❚❚' : '▶';
+
         return (
           <div>
             {/* Play Btn  */}
-            <button onClick={ (e) => { this.props.playMedia(e) } }> {this.props.isPlaying() ? '❚❚' : '▶'} </button> 
+            <button onClick={ (e) => { this.props.playMedia(e) } }> {playIcon} </button>
             {/* Backward Btn */}
-            <button 
+            <button
                 onMouseDown={ this.setIntervalHelperBackward }
                 onMouseUp={ this.clearIntervalHelper }
             > {'◀◀'}
             </button>
             {/* Forward Btn */}
-            <button 
+            <button
                 onMouseDown={ this.setIntervalHelperForward }
                 onMouseUp={ this.clearIntervalHelper }
-            > {'▶▶'} 
-            </button> 
+            > {'▶▶'}
+            </button>
             <br/>
             {/* Timecodes  */}
             <code>{this.props.currentTime}</code> / <code>{this.props.duration}</code>
             <br/>
-            <button type="button" 
+            <button type="button"
                 onClick={ this.props.promptSetCurrentTime }
-            >Jump To Time ⏱</button> 
+            >Jump To Time ⏱</button>
             <br/>
-            <button type="button" 
+            <button type="button"
                 onClick={ this.setTimecodeOffSetHelper }
                 >Set Timecode Offset ⏱</button>
-            <output><code>{this.props.timecodeOffset}</code></output>     
+            <output><code>{this.props.timecodeOffset}</code></output>
           </div>
         );
     }

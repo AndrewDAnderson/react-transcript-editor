@@ -1,7 +1,8 @@
 @value color-labs-red, color-light-grey, color-mid-grey, color-dark-grey from '../colours.module.css';
 
 .WrapperBlock {
-  width: 100%;
+  width: 80%;
+  margin: 0 auto;
   margin-bottom: 2em;
   overflow: auto;
   line-height: 1em;
@@ -14,7 +15,7 @@
 }
 
 .text {
-  width: 65%;
+  width: 70%;
   font-size: 1em;
   float: right;
   clear: right;
@@ -34,7 +35,7 @@
   font-weight: lighter;
   margin-bottom: 8px;
   width: 50%;
-  text-align: right;
+  /* text-align: right; */
 }
 
 .EditLabel {
