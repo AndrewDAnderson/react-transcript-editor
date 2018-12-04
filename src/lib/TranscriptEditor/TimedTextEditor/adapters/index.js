@@ -31,6 +31,7 @@ const sttJsonAdapter = (transcriptData, sttJsonType) => {
   switch (sttJsonType) {
     case 'bbckaldi':
        blocks = bbcKaldiToDraft(transcriptData);
+       console.log(JSON.stringify(blocks,null,2))
       return { blocks, entityMap: createEntityMap(blocks) };
     case 'autoedit2':
       blocks = autoEdit2ToDraft(transcriptData);
