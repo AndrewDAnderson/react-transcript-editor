@@ -77,7 +77,9 @@ class TranscriptEditor extends React.Component {
             <MediaPlayer
               // eslint-disable-next-line no-return-assign
               hookSeek={ foo => this.setCurrentTime = foo }
+              // eslint-disable-next-line no-return-assign
               hookPlayMedia={ foo => this.playMedia = foo }
+              // eslint-disable-next-line no-return-assign
               hookIsPlaying={ foo => this.isPlaying = foo }
               hookOnTimeUpdate={ this.handleTimeUpdate }
               mediaUrl={ this.props.mediaUrl }
