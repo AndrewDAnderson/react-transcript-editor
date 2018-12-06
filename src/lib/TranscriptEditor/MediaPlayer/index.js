@@ -55,15 +55,19 @@ class MediaPlayer extends React.Component {
 
   promptSetCurrentTime = () => {
     const newCurrentTime =  prompt('Jump to time - hh:mm:ss:ff hh:mm:ss mm:ss m:ss m.ss seconds');
-    this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'promptSetCurrentTime', name: 'jumpToTime', value: newCurrentTime })
+    if(this.props.handleAnalyticsEvents !== undefined){
+      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'promptSetCurrentTime', name: 'jumpToTime', value: newCurrentTime })
+    }
     if(newCurrentTime !== '' && newCurrentTime !== null){
       this.setCurrentTime(newCurrentTime)
     }
   }
 
   setTimeCodeOffset = (newTimeCodeOffSet) => {
-    this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'setTimeCodeOffset', name: 'timecodeOffsetValue', value: newTimeCodeOffSet })
-    if (newTimeCodeOffSet !== '' && newTimeCodeOffSet !== null) {
+    if(this.props.handleAnalyticsEvents !== undefined){
+      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'setTimeCodeOffset', name: 'timecodeOffsetValue', value: newTimeCodeOffSet })
+    }
+      if (newTimeCodeOffSet !== '' && newTimeCodeOffSet !== null) {
       
       // use similar helper function from above to convert
       let newCurrentTimeInSeconds = newTimeCodeOffSet;
@@ -76,8 +80,10 @@ class MediaPlayer extends React.Component {
 
   rollBack = () => {
     if (this.videoRef.current !== null) {
-      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'rollBack', name: 'rollBackValue', value: this.state.rollBackValueInSeconds })
-      // get video duration
+      if(this.props.handleAnalyticsEvents !== undefined){
+        this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'rollBack', name: 'rollBackValue', value: this.state.rollBackValueInSeconds })
+      }
+        // get video duration
       const videoElem = this.videoRef.current;
       const tmpDesiredCurrentTime = videoElem.currentTime - this.state.rollBackValueInSeconds;
       // > 0 < duration of video
@@ -123,7 +129,9 @@ class MediaPlayer extends React.Component {
         this.setState({
           playBackRate: speedValue,
         }, () => {
-          this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'setPlayBackRate', name: 'playbackRateNewValue', value: speedValue })
+          if(this.props.handleAnalyticsEvents !== undefined){
+            this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'setPlayBackRate', name: 'playbackRateNewValue', value: speedValue })
+          }
           this.videoRef.current.playbackRate = speedValue;
         })
       }
@@ -155,13 +163,17 @@ class MediaPlayer extends React.Component {
     console.log(this.state.isPausedWhileTyping)
     this.setState((prevState, props) => {
       console.log(prevState.isPausedWhileTyping)
-      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleTogglePauseWhileTyping', name: '', value: !prevState.isPausedWhileTyping  })
+      if(this.props.handleAnalyticsEvents !== undefined){
+        this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleTogglePauseWhileTyping', name: '', value: !prevState.isPausedWhileTyping  })
+      }
       return { isPausedWhileTyping:  !prevState.isPausedWhileTyping }
     })
   }
 
   handleToggleScrollIntoView = (e) => {
-    this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleToggleScrollIntoView', name: '', value: e.target.checked })
+    if(this.props.handleAnalyticsEvents !== undefined){
+      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleToggleScrollIntoView', name: '', value: e.target.checked })
+    }
     this.props.handleIsScrollIntoViewChange(e.target.checked);     
   }
 
@@ -239,7 +251,9 @@ class MediaPlayer extends React.Component {
       const resultInSeconds = totalTime * positionPercentage;
       // rounding up
       const roundNewCurrentTime = parseFloat((resultInSeconds).toFixed(2));
-      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleProgressBarClick', name: 'roundNewCurrentTime', value: roundNewCurrentTime })
+      if(this.props.handleAnalyticsEvents !== undefined){
+        this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleProgressBarClick', name: 'roundNewCurrentTime', value: roundNewCurrentTime })
+      }
       this.setCurrentTime(roundNewCurrentTime);
     }
   }

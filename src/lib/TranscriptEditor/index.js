@@ -42,7 +42,9 @@ class TranscriptEditor extends React.Component {
 
   // eslint-disable-next-line class-methods-use-this
   handleWordClick = (startTime) => {
-    this.props.handleAnalyticsEvents({ category: 'TranscriptEditor', action: 'doubleClickOnWord', name: '', value: startTime })
+    if(this.props.handleAnalyticsEvents !== undefined){
+      this.props.handleAnalyticsEvents({ category: 'TranscriptEditor', action: 'doubleClickOnWord', name: '', value: startTime })
+    }
     this.setCurrentTime(startTime);
   }
 
