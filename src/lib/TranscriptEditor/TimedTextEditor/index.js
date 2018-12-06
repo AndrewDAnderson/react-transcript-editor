@@ -95,6 +95,7 @@ class TimedTextEditor extends React.Component {
   loadData() {
     if (this.props.transcriptData !== null) {
       const blocks = sttJsonAdapter(this.props.transcriptData, this.props.sttJsonType);
+      // TODO: here could do word count for analytics using draftJs blocks.
       this.setEditorContentState(blocks)
     }
   }
@@ -184,7 +185,8 @@ class TimedTextEditor extends React.Component {
         // passing in callback function to be able to set state in parent component
         setEditorNewContentState: this.setEditorNewContentState,
         // to make timecodes clickable
-        onWordClick: this.props.onWordClick
+        onWordClick: this.props.onWordClick,
+        handleAnalyticsEvents: this.props.handleAnalyticsEvents
       }
     };
   }
@@ -223,7 +225,6 @@ class TimedTextEditor extends React.Component {
         }
     }
     if(currentWord.start !== 'NA'){
-      console.log('TimedTextEditor: ',this.props.isScrollIntoViewOn);
       if(this.props.isScrollIntoViewOn){
         const currentWordElement = document.querySelector(`span.Word[data-start="${ currentWord.start }"]`);
         currentWordElement.scrollIntoView({ block: 'center', inline: 'center' })
@@ -310,9 +311,6 @@ class TimedTextEditor extends React.Component {
           // eg if hit enter on timecode or speaker
           return 'not-handled';
         }
-
-        console.log('originalBlockData',wordStartTime, blockSpeaker);
-        console.log('originalBlockData',originalBlockData);
           // https://draftjs.org/docs/api-reference-modifier#mergeblockdata
         const afterMergeContentState = Modifier.mergeBlockData(
           splitState.getCurrentContent(),

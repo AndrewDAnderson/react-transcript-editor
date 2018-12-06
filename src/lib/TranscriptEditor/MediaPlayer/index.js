@@ -158,13 +158,10 @@ class MediaPlayer extends React.Component {
   }
 
   handleTogglePauseWhileTyping = (e) => {
-  
-    console.log('triggered')
-    console.log(this.state.isPausedWhileTyping)
     this.setState((prevState, props) => {
       console.log(prevState.isPausedWhileTyping)
       if(this.props.handleAnalyticsEvents !== undefined){
-        this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleTogglePauseWhileTyping', name: '', value: !prevState.isPausedWhileTyping  })
+        this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleTogglePauseWhileTyping', name:  !prevState.isPausedWhileTyping ? 'on':'off', value: !prevState.isPausedWhileTyping? 1: 0  })
       }
       return { isPausedWhileTyping:  !prevState.isPausedWhileTyping }
     })
@@ -172,7 +169,7 @@ class MediaPlayer extends React.Component {
 
   handleToggleScrollIntoView = (e) => {
     if(this.props.handleAnalyticsEvents !== undefined){
-      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleToggleScrollIntoView', name: '', value: e.target.checked })
+      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleToggleScrollIntoView', name: e.target.checked? 'on':'off', value: e.target.checked? 1: 0 })
     }
     this.props.handleIsScrollIntoViewChange(e.target.checked);     
   }
@@ -197,12 +194,18 @@ class MediaPlayer extends React.Component {
     if (this.videoRef.current !== null) {
       // if playMedia is being triggered by PlayerControl or Video element
       // then it will have a target attribute
-      if(playPauseBool.target !== undefined){
+      if(typeof playPauseBool !== 'boolean'){
           // checks on whether to use default fallback if no param is provided
           if (this.videoRef.current.paused) {
             this.videoRef.current.play();
+            if(this.props.handleAnalyticsEvents){
+              this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'playMedia', name: 'play', value: this.videoRef.current.currentTime }) 
+            }
           } else {
             this.videoRef.current.pause();
+            if(this.props.handleAnalyticsEvents){
+              this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'playMedia', name: 'pause', value: this.videoRef.current.currentTime }) 
+            }
           }
       }
       else{
@@ -210,8 +213,14 @@ class MediaPlayer extends React.Component {
         if(this.state.isPausedWhileTyping){
             if (playPauseBool) {
               this.videoRef.current.play();
+              if(this.props.handleAnalyticsEvents){
+                this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'playMedia-isPausedWhileTyping', name: 'play', value: this.videoRef.current.currentTime }) 
+              }
             } else {
               this.videoRef.current.pause();
+              if(this.props.handleAnalyticsEvents){
+                this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'playMedia-isPausedWhileTyping', name: 'pause', value: this.videoRef.current.currentTime }) 
+              }
             }
           }
       }
@@ -271,6 +280,11 @@ class MediaPlayer extends React.Component {
     } 
       return  '00:00:00:00';
   }
+  handleMediaDurationChange =(e) => {
+    if(this.props.handleAnalyticsEvents !== undefined){
+      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'mediaDuration', name: secondsToTimecode(e.target.duration), value: e.target.duration })
+    }
+  }
 
   render() {
     // conditional, if media player not defined then don't show
@@ -289,6 +303,7 @@ class MediaPlayer extends React.Component {
           data-testid="media-player-id"
           onClick={ this.playMedia.bind(this) }
           ref={ this.videoRef }
+          onDurationChange={ this.handleMediaDurationChange }
         />
       );
     }
