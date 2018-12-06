@@ -42,6 +42,7 @@ class TranscriptEditor extends React.Component {
 
   // eslint-disable-next-line class-methods-use-this
   handleWordClick = (startTime) => {
+    this.props.handleAnalyticsEvents({ category: 'TranscriptEditor', action: 'doubleClickOnWord', name: '', value: startTime })
     this.setCurrentTime(startTime);
   }
 
@@ -80,6 +81,7 @@ class TranscriptEditor extends React.Component {
               mediaUrl={ this.props.mediaUrl }
               isScrollIntoViewOn={ this.state.isScrollIntoViewOn }
               handleIsScrollIntoViewChange={ this.handleIsScrollIntoViewChange }
+              handleAnalyticsEvents={ this.props.handleAnalyticsEvents }
              />
           </aside>
           <main className={ styles.main }>
@@ -94,6 +96,7 @@ class TranscriptEditor extends React.Component {
               sttJsonType={ this.props.sttJsonType }
               ref={ 'timedTextEditor' }
               mediaUrl={ this.props.mediaUrl }
+              handleAnalyticsEvents={ this.props.handleAnalyticsEvents }
               />
           </main>
         </section>

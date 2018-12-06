@@ -16,6 +16,7 @@ class App extends React.Component {
       mediaUrl: null,
       isTextEditable: true,
       sttType: 'bbckaldi',
+      analyticsEvents: []
     };
     // this.handleChangeLoadTranscriptJson = this.handleChangeLoadTranscriptJson.bind(this);
   }
@@ -105,6 +106,15 @@ class App extends React.Component {
       console.info('cleared local storage')
    }
 
+   handleAnalyticsEvents = (event) => {
+    console.log(event)
+      const tmpAnalyticsEventsList = this.state.analyticsEvents;
+      tmpAnalyticsEventsList.push(event);
+    this.setState({
+      analyticsEvents: tmpAnalyticsEventsList
+    })
+   }  
+
    render() {
      return (
        <div className={ styles.container }>
@@ -164,7 +174,12 @@ class App extends React.Component {
           isEditable={ this.state.isTextEditable }
           sttJsonType={ this.state.sttType }
           ref={ 'transcriptEditor' }
+          handleAnalyticsEvents={ this.handleAnalyticsEvents }
         />
+         <hr/>
+         <label>Components Analytics</label>
+         <textarea style={ { height: '200px', width: '100%' } } value={ JSON.stringify(this.state.analyticsEvents,null,2) } disabled></textarea>
+         
        </div>
      );
    }

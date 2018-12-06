@@ -54,11 +54,17 @@ class MediaPlayer extends React.Component {
   }
 
   promptSetCurrentTime = () => {
-    this.setCurrentTime( prompt('Jump to time - hh:mm:ss:ff hh:mm:ss mm:ss m:ss m.ss seconds'))
+    const newCurrentTime =  prompt('Jump to time - hh:mm:ss:ff hh:mm:ss mm:ss m:ss m.ss seconds');
+    this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'promptSetCurrentTime', name: 'jumpToTime', value: newCurrentTime })
+    if(newCurrentTime !== '' && newCurrentTime !== null){
+      this.setCurrentTime(newCurrentTime)
+    }
   }
 
   setTimeCodeOffset = (newTimeCodeOffSet) => {
+    this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'setTimeCodeOffset', name: 'timecodeOffsetValue', value: newTimeCodeOffSet })
     if (newTimeCodeOffSet !== '' && newTimeCodeOffSet !== null) {
+      
       // use similar helper function from above to convert
       let newCurrentTimeInSeconds = newTimeCodeOffSet;
       if (newTimeCodeOffSet.includes(':')) {
@@ -70,6 +76,7 @@ class MediaPlayer extends React.Component {
 
   rollBack = () => {
     if (this.videoRef.current !== null) {
+      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'rollBack', name: 'rollBackValue', value: this.state.rollBackValueInSeconds })
       // get video duration
       const videoElem = this.videoRef.current;
       const tmpDesiredCurrentTime = videoElem.currentTime - this.state.rollBackValueInSeconds;
@@ -116,6 +123,7 @@ class MediaPlayer extends React.Component {
         this.setState({
           playBackRate: speedValue,
         }, () => {
+          this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'setPlayBackRate', name: 'playbackRateNewValue', value: speedValue })
           this.videoRef.current.playbackRate = speedValue;
         })
       }
@@ -142,15 +150,18 @@ class MediaPlayer extends React.Component {
   }
 
   handleTogglePauseWhileTyping = (e) => {
+  
     console.log('triggered')
     console.log(this.state.isPausedWhileTyping)
     this.setState((prevState, props) => {
       console.log(prevState.isPausedWhileTyping)
+      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleTogglePauseWhileTyping', name: '', value: !prevState.isPausedWhileTyping  })
       return { isPausedWhileTyping:  !prevState.isPausedWhileTyping }
     })
   }
 
   handleToggleScrollIntoView = (e) => {
+    this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleToggleScrollIntoView', name: '', value: e.target.checked })
     this.props.handleIsScrollIntoViewChange(e.target.checked);     
   }
 
@@ -197,6 +208,7 @@ class MediaPlayer extends React.Component {
 
   skipForward = () => {
     if (this.videoRef.current !== null) {
+      // TODO track this?
       const currentTime = this.videoRef.current.currentTime;
       const newCurrentTimeIncreased = currentTime + 10;
       const newCurrentTime = Number((newCurrentTimeIncreased).toFixed(1));
@@ -205,6 +217,7 @@ class MediaPlayer extends React.Component {
   }
 
   skipBackward = () => {
+     // TODO track this?
     if (this.videoRef.current !== null) {
       const currentTime = this.videoRef.current.currentTime;
       const newCurrentTimeIncreased = currentTime - 10;
@@ -215,6 +228,7 @@ class MediaPlayer extends React.Component {
 
   handleProgressBarClick = (e) => {
     if (this.videoRef.current !== null) {
+  
       // length of the bar
       const lengthOfBar = e.target.offsetWidth;
       // distance of the position of the lick from the start of the progress bar element
@@ -225,6 +239,7 @@ class MediaPlayer extends React.Component {
       const resultInSeconds = totalTime * positionPercentage;
       // rounding up
       const roundNewCurrentTime = parseFloat((resultInSeconds).toFixed(2));
+      this.props.handleAnalyticsEvents({ category: 'MediaPlayer', action: 'handleProgressBarClick', name: 'roundNewCurrentTime', value: roundNewCurrentTime })
       this.setCurrentTime(roundNewCurrentTime);
     }
   }
